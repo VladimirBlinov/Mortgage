@@ -1,5 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+pd.set_option('max_colwidth', 0)
+pd.set_option('display.width', 0)
+pd.options.display.float_format = '{:,.2f}'.format
 
 
 class Mortgage:
@@ -17,7 +22,7 @@ class Mortgage:
         self.initial_payment = initial_payment_mln * self.MULTIPLIER
         self.loan_rate = loan_rate
         self.period = period_years
-        self.period_months = self.period * self.MONTHS_PER_YEAR
+        self.period_months = int(self.period * self.MONTHS_PER_YEAR)
         self.reduce_period_month = self.period * self.MONTHS_PER_YEAR
         self.month_loan_rate = self.loan_rate / self.MONTHS_PER_YEAR / 100
         # ОБЩАЯ_СТАВКА = (1 + ЕЖЕМЕСЯЧНАЯ_СТАВКА) ^ СРОК_ИПОТЕКИ_МЕСЯЦЕВ
@@ -381,7 +386,7 @@ class Mortgage:
         plt.title(f'Стоимость квартиры: {self.price_mln} млн; Первоначальный платеж: {self.initial_payment_mln} млн;' 
                   f' Сумма кредита: {self.total_loan_amount / self.MULTIPLIER:.1f} млн ;'
                   f' Срок: {self.period} лет; Ставка: {self.loan_rate} %;\n'
-                  f' Досрочное погашение {self._early_payment_amount:.0f} RUB каждые {self._frequency_months} месяца,'
+                  f' Досрочное погашение {self._early_payment_amount:.0f} RUB каждый {self._frequency_months}й месяц,'
                   f' начиная с месяца №{self._first_month}\n'
                   f'Переплата (без досрочного погашения): {self.overpayment / self.MULTIPLIER:.1f} млн; '
                   f'Переплата (сокращаем платеж): {self.early_overpayment / self.MULTIPLIER:.1f} млн; '
@@ -393,11 +398,11 @@ class Mortgage:
 
 
 def main():
-    price_mn = 20
-    initial_payment_mn = 5
+    price_mn = 18
+    initial_payment_mn = 2.5
     period = 30
-    loan_rate_pct = 6.5
-    first_month = 1
+    loan_rate_pct = 7.6
+    first_month = 24
     frequency = 1
     early_pay_amount = 50000
     limit_month_perc = 50000
@@ -439,6 +444,19 @@ def main():
     print('остаток на жизнь {:,.0f}'.format(260000 - m.avg_reduce_period_monthly_payment - 50000).replace(',', ' '))
     print('переплата {:,.0f}'.format(m.reduce_period_overpayment).replace(',', ' '))
     print('стоимость 1 руб  {:,.2f}'.format(m.reduce_period_total_payment / (m.price - m.initial_payment)).replace(',', ' '))
+
+
+    rent = 80000
+    df = m.payments_calendar[['Early_ext_percent_part', 'Early_ext_main_part', 'Early_ext_monthly_payment',
+                              'Early_ext_residual_loan_amount']].copy()
+    df['cum_mp'] = df.Early_ext_monthly_payment.cumsum()
+    df['cum_mpp'] = df.Early_ext_percent_part.cumsum()
+    df['cum_mmp'] = df.Early_ext_main_part.cumsum()
+    pd.set_option('display.max_rows', df.shape[0] + 1)
+    print(df)
+    sns.set_theme(style="darkgrid")
+    sns.lineplot(data=df)
+    plt.show()
 
 
 if __name__ == '__main__':

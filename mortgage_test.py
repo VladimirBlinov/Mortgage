@@ -39,7 +39,8 @@ class MortTest:
 
     def price_test(self, start_price=10, end_price=23):
         for _price_mn in range(start_price, end_price, 1):
-            m = Mortgage(_price_mn, self.initial_payment_mn, self.loan_rate_pct, self.period,
+            m = Mortgage(price_mln=_price_mn, initial_payment_mln=self.initial_payment_mn, loan_rate=self.loan_rate_pct,
+                         period_years=self.period,
                          early_payment=True, first_month=self.first_month,
                          frequency_months=self.frequency,
                          early_payment_amount=self.early_payment_amount)
