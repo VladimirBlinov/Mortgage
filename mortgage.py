@@ -446,18 +446,5 @@ def main():
     print('стоимость 1 руб  {:,.2f}'.format(m.reduce_period_total_payment / (m.price - m.initial_payment)).replace(',', ' '))
 
 
-    rent = 80000
-    df = m.payments_calendar[['Early_ext_percent_part', 'Early_ext_main_part', 'Early_ext_monthly_payment',
-                              'Early_ext_residual_loan_amount']].copy()
-    df['cum_mp'] = df.Early_ext_monthly_payment.cumsum()
-    df['cum_mpp'] = df.Early_ext_percent_part.cumsum()
-    df['cum_mmp'] = df.Early_ext_main_part.cumsum()
-    pd.set_option('display.max_rows', df.shape[0] + 1)
-    print(df)
-    sns.set_theme(style="darkgrid")
-    sns.lineplot(data=df)
-    plt.show()
-
-
 if __name__ == '__main__':
     main()
